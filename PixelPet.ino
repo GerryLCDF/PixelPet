@@ -1,18 +1,6 @@
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <EEPROM.h>  
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-// Botones
-#define BTN0 2
-#define BTN1 3
-#define BTN2 4
-#define BUZZER 9
-
+// =================== ICONOS y ANIMACIONES ===================
 const unsigned char PROGMEM huevo1[] = {
     0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00,
@@ -562,19 +550,78 @@ const unsigned char PROGMEM iconoFlappy[] = {0x7F, 0xFF, 0xFF, 0xFF, 0xFE,  0xFF
 const unsigned char PROGMEM iconoSalir[] = {  0x7F, 0xFF, 0xFF, 0xFF, 0xFE,  0xFF, 0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF, 0xFF,  0xE0, 0x00, 0x00, 0x00, 0x07,  0xE0, 0x0E, 0xAE, 0xE0, 0x07,  0xE0, 0x08, 0xA4, 0x40, 0x07,  0xE0, 0x0C, 0x44, 0x40, 0x07,0xE0, 0x08, 0xA4, 0x40, 0x07,
   0xE0, 0x0E, 0xAE, 0x40, 0x07,  0xE0, 0x00, 0x00, 0x00, 0x07,  0xE0, 0x00, 0x01, 0xE0, 0x07,  0xE0, 0x03, 0xFF, 0xFF, 0x87,  0xE0, 0x02, 0x01, 0xFF, 0x87,  0xE0, 0x02, 0x01, 0xFF, 0x87,  0xE0, 0x02, 0x71, 0xFF, 0x87,  0xE0, 0x02, 0xF9, 0xFF, 0x87,  0xE0, 0x02, 0xF9, 0xFF, 0x87,  0xE0, 0x00, 0xF9, 0xFF, 0x87,  0xE0, 0x0F, 0x71, 0xFF, 0x87,  0xE0, 0x1F, 0x81, 0xFF, 0x87,  0xE0, 0x3F, 0xE1, 0xFF, 0x87,  0xE0, 0x7F, 0xF9, 0xFF, 0x87,  0xE0, 0x7F, 0xB9, 0x7F, 0x87,0xE0, 0x6F, 0x01, 0x3F, 0x87,
   0xE0, 0x0F, 0x01, 0xFF, 0x87,  0xE0, 0x1F, 0x81, 0xFF, 0x87,  0xE0, 0x3F, 0xC1, 0xFF, 0x87,  0xE1, 0xF9, 0xE1, 0xFF, 0x87,  0xE3, 0xF1, 0xF1, 0xFF, 0x87,  0xE3, 0xE2, 0xF1, 0xFF, 0x87,  0xE1, 0xC2, 0xF1, 0xFF, 0x87,  0xE0, 0x02, 0x61, 0xFF, 0x87,  0xE0, 0x02, 0x01, 0xFF, 0x87,  0xE0, 0x02, 0x01, 0xFF, 0x87,  0xE0, 0x03, 0xFF, 0xFF, 0x87,  0xE0, 0x00, 0x01, 0xE0, 0x07,  0xE0, 0x00, 0x00, 0x00, 0x07,  0xFF, 0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF, 0xFF,  0x7F, 0xFF, 0xFF, 0xFF, 0xFE,};
+const unsigned char PROGMEM iconoDormir2[] = {0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0xFF, 0x00, 0x00, 
+    0x00, 0x03, 0x00, 0xC0, 0x00,  0x00, 0x04, 0x00, 0x20, 0x00,  0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x10, 0x00, 0x08, 0x00,  0x00, 0x10, 0x00, 0x08, 0x00,  0x00, 0x20, 0x24, 0x04, 0x00,  0x00, 0x20, 0x1A, 0x04, 0x00,  0x00, 0x21, 0x02, 0x04, 0x00,  0x00, 0x21, 0x02, 0x04, 0x00,  0x00, 0x21, 0x04, 0x04, 0x00,  0x00, 0x20, 0x84, 0x04, 0x00,  0x00, 0x20, 0x88, 0x04, 0x00,  0x00, 0x20, 0x88, 0x04, 0x00,  0x00, 0x10, 0x04, 0x08, 0x00,  0x00, 0x08, 0x02, 0x10, 0x00,  0x00, 0x04, 0x42, 0x20, 0x00,
+    0x00, 0x04, 0x42, 0x20, 0x00,  0x00, 0x04, 0x42, 0x20, 0x00,  0x00, 0x02, 0x42, 0x40, 0x00,  0x00, 0x00, 0x3F, 0x80, 0x00,  0x00, 0x01, 0xFF, 0x80, 0x00,  0x00, 0x01, 0xFF, 0x80, 0x00,  0x00, 0x01, 0xFF, 0x80, 0x00,  0x00, 0x01, 0xFF, 0x80, 0x00,  0x00, 0x00, 0xFF, 0x00, 0x00,  0x00, 0x00, 0x7E, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,};
 
-// ==== VARIABLES ====
 
-// Variables generales
-int hambre = 100;    // 0 a 100 (representa cuánta hambre tiene el Tamagotchi)
-int energia = 100;   // 0 a 100 (representa la energía disponible)
 
-// Variables de navegación de salas
+const unsigned char PROGMEM iconoCreditos[] = {0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x0F, 0xFF, 0xF0, 0x00,
+    0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x0B, 0xC0, 0x10, 0x00,  0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x0B, 0xFF, 0x90, 0x00,  0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x08, 0x00, 0x10, 0x00,  0x00, 0x1B, 0xFF, 0x98, 0x00,  0x00, 0x28, 0x00, 0x14, 0x00,  0x00, 0x68, 0x00, 0x16, 0x00,  0x00, 0xE8, 0x00, 0x17, 0x00,  0x01, 0xEB, 0xF9, 0x97, 0x80,  0x03, 0xE8, 0x02, 0x57, 0xC0,  0x05, 0xE8, 0x02, 0x57, 0xA0,0x0E, 0x28, 0x01, 0x90, 0x70,
+    0x0F, 0xF8, 0x00, 0x1F, 0xF0,  0x0F, 0xF7, 0x81, 0xEF, 0xF0,  0x0F, 0xF8, 0x7E, 0x1F, 0xF0,  0x0F, 0xFF, 0x81, 0xFF, 0xF0,  0x0F, 0xFF, 0xFF, 0xFF, 0xF0,  0x0F, 0xFF, 0x99, 0xFF, 0xF0,  0x0F, 0xFF, 0x00, 0xFF, 0xF0,  0x0F, 0xFF, 0x24, 0xFF, 0xF0,  0x0F, 0xFF, 0x24, 0xFF, 0xF0,  0x0F, 0xFF, 0x81, 0xFF, 0xF0,  0x0F, 0xFF, 0xDB, 0xFF, 0xF0,  0x07, 0xFF, 0xE7, 0xFF, 0xE0,  0x00, 0x0F, 0xFF, 0xF0, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,
+
+}; // Ejemplo simple
+
+const unsigned char PROGMEM iconoReset[] = {0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x1F, 0x80, 0x00,  0x00, 0x00, 0x7F, 0xF0, 0x00,  0x00, 0x01, 0xFF, 0xFC, 0x00,0x00, 0x07, 0xFF, 0xFE, 0x00,
+    0x00, 0x07, 0xFF, 0xFF, 0x00,  0x00, 0x0F, 0xFF, 0xFF, 0x80,  0x00, 0x1F, 0xFF, 0xFF, 0xC0,  0x00, 0x1F, 0xFF, 0xFF, 0xC0,  0x00, 0x3F, 0xFF, 0xFF, 0xE0,  0x00, 0x3F, 0xFF, 0xFF, 0xE0,  0x00, 0x3F, 0xE0, 0x7F, 0xF0,  0x00, 0x3F, 0xC0, 0x3F, 0xF0,  0x00, 0x3F, 0xC0, 0x1F, 0xF8,  0x00, 0x3F, 0xC0, 0x1F, 0xF8,  0x01, 0xFF, 0xF8, 0x0F, 0xF8,  0x00, 0xFF, 0xD0, 0x0F, 0xF8,  0x00, 0x7F, 0xA0, 0x0F, 0xF8,  0x00, 0x3F, 0x40, 0x0F, 0xF8,  0x00, 0x1E, 0x80, 0x17, 0xF0, 0x00, 0x0D, 0x00, 0x3F, 0xF0,
+    0x00, 0x06, 0x00, 0x7F, 0xE0,  0x00, 0x00, 0x00, 0xFF, 0xE0,  0x00, 0x00, 0x81, 0xB7, 0xC0,  0x00, 0x00, 0x2F, 0xFF, 0x80,  0x00, 0x00, 0x56, 0xED, 0x00,  0x00, 0x00, 0x3F, 0xFE, 0x00,  0x00, 0x00, 0x0D, 0xB8, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00,
+}; // Ejemplo simple
+
+
+
+#include <EEPROM.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+// =================== DISPLAY ===================
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+// =================== PINES ===================
+#define BTN0 2
+#define BTN1 3
+#define BTN2 4
+#define BUZZER 9
+
+// =================== VARIABLES GENERALES ===================
+int hambre = 100;
+int energia = 100;
+int monedas = 0;
+
 int salaActual = 0;
 const int totalSalas = 3;
 const char* nombresSalas[3] = {"Cocina", "Juegos", "Habitacion"};
 const unsigned char* iconosSalas[3] = {iconoFood, iconoJuegos, iconoDormir};
+int porcentajeSalas[3] = {100, 60, 90};
 
+// =================== PROGRESO (HUEVO) ===================
+int progreso = 0;
+const int maxProgreso = 5;
+const char* frases[5] = {
+  "hey esta por iniciar un nuevo mundo",
+  "ya esta mas cerca",
+  "como se llamara",
+  "un poco mas",
+  "3..2..1..Vamos!!"
+};
+
+const unsigned char* framesHuevo[4] = {huevo1, huevo2, huevo3, huevo4};
+const unsigned char* framesBB[4] = {bb1, bb2, bb3, bb4};
+unsigned long ultimoCambio = 0;
+int frameActual = 0;
+
+// =================== MENÚS ===================
+bool menuCocinaActivo = false;
+bool menuHabitacionActivo = false;
+bool menuJuegosActivo = false;
+
+bool parpadeoActivo = false;
+unsigned long inicioParpadeo = 0;
+
+// =================== MENÚ COCINA ===================
+int opcionCocina = 0;
+const int totalOpcionesCocina = 8;
 
 const char* nombresComida[7] = {
   "Pan", "Galleta", "Carne", "Sopa", "Hamburguesa", "Vitamina", "Energetizante"
@@ -588,572 +635,292 @@ const unsigned char* iconosComida[7] = {
   iconoVitamina, iconoEnergetizante
 };
 
-
-// Porcentajes y monedas
-int porcentajeSalas[3] = {100, 60, 90};
-int monedas = 0;
-
-// Variables barra de progreso (romper huevo)
-int progreso = 0;
-const int maxProgreso = 5;
-const char* frases[5] = {
-  "hey esta por iniciar un nuevo mundo",
-  "ya esta mas cerca",
-  "como se llamara",
-  "un poco mas",
-  "3..2..1..Vamos!!"
+// =================== MENÚ HABITACIÓN ===================
+int opcionHabitacion = 0;
+const int totalOpcionesHabitacion = 4;
+const char* nombresHabitacion[4] = {"Dormir", "Creditos", "Reset", "Salir"};
+const unsigned char* iconosHabitacion[4] = {
+  iconoDormir2, iconoCreditos, iconoReset, iconoSalir
 };
 
-// Frames animaciones huevo y BB
-const unsigned char* framesHuevo[4] = {huevo1, huevo2, huevo3, huevo4};
-const unsigned char* framesBB[4] = {bb1, bb2, bb3, bb4};
+// =================== MENÚ JUEGOS ===================
+// =================== VARIABLES PARA LOS JUEGOS ===================
 
-// Variables barra superior e inferior
-unsigned long ultimoCambio = 0;
-int frameActual = 0;
-
-// Variables del menú juegos
-bool menuJuegosActivo = false;
-int opcionJuego = 0;
-bool parpadeoActivo = false;
-unsigned long inicioParpadeo = 0;
-
-const int totalJuegos = 4;  // 3 juegos + opción regresar
-const char* nombresJuegos[4] = {"Ponk", "Block Breaker", "Flappy Dapy", "Regresar"};
-const unsigned char* iconosJuegos[4] = {iconoPonk, iconoBlock, iconoFlappy, iconoSalir};
-
-bool enJuego = false;
-int juegoActual = -1;
-
-// Variables del juego Ponk
+// PONK
 int paddleX = 48;
-const int paddleWidth = 20;  // Paleta más pequeña
+const int paddleWidth = 20;
 const int paddleHeight = 4;
-
 int paddleCPU_X = 48;
 unsigned long ultimoMovimientoCPU = 0;
 int delayCPU = 80;
-
 int ballX = 64, ballY = 30;
 int ballVelX = 1, ballVelY = 1;
 bool esperandoPelota = false;
 unsigned long tiempoEsperaPelota = 0;
 
-unsigned long ultimoFramePonk = 0;
+// BLOCK BREAKER
+static int paddleX_BB = 48;
+static int ballX_BB = 64, ballY_BB = 32;
+static int ballVelX_BB = 1, ballVelY_BB = -1;
+static bool bloques[4][8];
+static bool nivelIniciado = false;
+static int vidasBB = 3;
 
-// =================== EEPROM: Guardar monedas ===================
-#include <EEPROM.h>
+// FLAPPY DAPY
+static int birdX = 30, birdY = 30;
+static int birdVel = 0;
+static int obstX = 128, gapY = 20;
+static int vidasFD = 3;
+static int obstaculosPasados = 0;
+const int gapAltura = 35;
+static bool iniciadoFD = false;
 
-void guardarMonedas() {
-  EEPROM.put(0, monedas);
-}
 
+int opcionJuego = 0;
+const int totalJuegos = 4;
+const char* nombresJuegos[4] = {"Ponk", "Block Breaker", "Flappy Dapy", "Regresar"};
+const unsigned char* iconosJuegos[4] = {iconoPonk, iconoBlock, iconoFlappy, iconoSalir};
+bool enJuego = false;
+int juegoActual = -1;
+
+// =================== HABITACIÓN: BLOQUEO Y CANCIÓN ===================
+bool durmiendo = false;
+unsigned long tiempoDormir = 0;
+const int notas[] = {392, 440, 392, 330, 392, 440, 392, 330}; 
+const int duraciones[] = {300, 300, 300, 600, 300, 300, 300, 600};
+
+// =================== EEPROM ===================
+void guardarMonedas() { EEPROM.put(0, monedas); }
 void cargarMonedas() {
   EEPROM.get(0, monedas);
   if (monedas < 0 || monedas > 9999) monedas = 0;
 }
 
-
+// =================== SONIDO ===================
 void sonidoHuevo() {
-  tone(BUZZER, 1000, 200);   // tono de 1kHz por 200ms
+  tone(BUZZER, 1000, 200);
   delay(250);
-  tone(BUZZER, 1500, 200);   // tono de 1.5kHz por 200ms
-
+  tone(BUZZER, 1500, 200);
   noTone(BUZZER);
 }
 
-// =================== SETUP ===================
+void sonidoMover() {
+  tone(BUZZER, 1200, 50);
+  delay(80);
+  noTone(BUZZER);
+}
 
+void sonidoComer() {
+  tone(BUZZER, 800, 150);
+  delay(200);
+  noTone(BUZZER);
+}
+
+void cancionDormir() {
+  for (int i = 0; i < 8; i++) {
+    tone(BUZZER, notas[i], duraciones[i]);
+    delay(duraciones[i] * 1.3);
+  }
+  noTone(BUZZER);
+}
+
+// =================== RESET ===================
+void resetGame() {
+  monedas = 0;
+  hambre = 100;
+  energia = 100;
+  progreso = 0;
+  guardarMonedas();
+}
+
+// =================== SETUP ===================
 void setup() {
-  // Inicializa pantalla OLED
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
   display.display();
 
-  // Configura botones como entradas con resistencia pull-up
   pinMode(BTN0, INPUT_PULLUP);
   pinMode(BTN1, INPUT_PULLUP);
   pinMode(BTN2, INPUT_PULLUP);
   pinMode(BUZZER, OUTPUT);
 
-
-  // Cargar monedas desde EEPROM
   cargarMonedas();
 }
 
-// =================== LOOP PRINCIPAL ===================
+// =================== DIBUJAR PERSONAJE ===================
+void dibujarPersonajeEsquina() {
+  if (progreso >= maxProgreso) {
+    display.drawBitmap(2, 2, framesBB[frameActual], 16, 16, WHITE); // esquina superior izquierda
+  }
+}
 
+
+
+
+
+// =================== LOOP ===================
 void loop() {
-  // =================== Botones ===================
   bool btn0 = digitalRead(BTN0) == LOW;
   bool btn1 = digitalRead(BTN1) == LOW;
   bool btn2 = digitalRead(BTN2) == LOW;
 
+  // =================== BLOQUEO DURMIENDO ===================
+  if (durmiendo) {
+    display.clearDisplay();
+    display.invertDisplay(true);
+    display.setCursor(20, 20);
+    display.setTextSize(1);
+    display.print("Durmiendo...");
+    display.display();
+
+    if (millis() - tiempoDormir > 1000) {
+      porcentajeSalas[2] += 5;
+      if (porcentajeSalas[2] >= 100) {
+        porcentajeSalas[2] = 100;
+        durmiendo = false;
+        display.invertDisplay(false);
+      } else {
+        tiempoDormir = millis();
+      }
+    }
+    return;
+  }
+
   display.clearDisplay();
 
-
-
-
-
-
-
- 
-
-
-
-// =================== Lógica Menú Juegos ===================
-if (menuJuegosActivo) {
-  if (parpadeoActivo) {
-    // Espera 3 segundos con parpadeo antes de entrar al juego o regresar
-    if (millis() - inicioParpadeo >= 3000) {
-      parpadeoActivo = false;
-
-      if (opcionJuego == 3) {
-        // Si es "Regresar": vuelve a habitaciones
-        menuJuegosActivo = false;
-        enJuego = false;
-      } else {
-        // Si es cualquier otro juego: arranca
-        enJuego = true;
-        menuJuegosActivo = false;  // Salimos del menú juegos
-        juegoActual = opcionJuego;
-      }
-    } else {
-      // Parpadeo del icono (sin texto)
-      if ((millis() / 300) % 2 == 0) {
-        display.drawBitmap((128 - 40) / 2, 8, iconosJuegos[opcionJuego], 40, 40, WHITE);
-
-        // También parpadea el nombre
-        int textWidth = strlen(nombresJuegos[opcionJuego]) * 6;
-        int xText = (128 - textWidth) / 2;
-        display.setCursor(xText, 54);
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
-        display.print(nombresJuegos[opcionJuego]);
-      }
-    }
-  } else {
-    // Navegar en el menú
-    if (btn0) {
-      opcionJuego = (opcionJuego - 1 + totalJuegos) % totalJuegos;
-      delay(200);
-    }
-    if (btn2) {
-      opcionJuego = (opcionJuego + 1) % totalJuegos;
-      delay(200);
-    }
-    if (btn1) {
-      inicioParpadeo = millis();
-      parpadeoActivo = true;
-    }
-
-    // Mostrar icono y nombre centrado
-    display.drawBitmap((128 - 40) / 2, 8, iconosJuegos[opcionJuego], 40, 40, WHITE);
-    int textWidth = strlen(nombresJuegos[opcionJuego]) * 6;
-    int xText = (128 - textWidth) / 2;
-    display.setCursor(xText, 54);
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.print(nombresJuegos[opcionJuego]);
-
-    // Monedas arriba derecha
-    display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
-    display.setCursor(98, 4);
-    display.setTextSize(1);
-    display.print(monedas);
-  }
-
-  display.display();
-  return;
-}
-
-
-// =================== Juegos activo ===================
-if (enJuego) {
- // === Juego Ponk ===
-if (juegoActual == 0) {
-  // Movimiento del jugador (paleta inferior)
-  if (btn0 && paddleX > 0) paddleX -= 2;
-  if (btn2 && paddleX + paddleWidth < 128) paddleX += 2;
-
-  // Movimiento de la CPU (paleta superior)
-  if (millis() - ultimoMovimientoCPU > delayCPU) {
-    if (paddleCPU_X + paddleWidth / 2 < ballX) paddleCPU_X += 1;
-    else if (paddleCPU_X + paddleWidth / 2 > ballX) paddleCPU_X -= 1;
-    ultimoMovimientoCPU = millis();
-  }
-
-  // Lógica de la pelota
-  if (esperandoPelota) {
-    // Si está en pausa por reinicio, esperar 1 segundo
-    if (millis() - tiempoEsperaPelota > 1000) {
-      esperandoPelota = false;
-      ballX = 64; 
-      ballY = 32;
-      ballVelX = 1; 
-      ballVelY = 1;
-    }
-  } else {
-    // Mover pelota
-    ballX += ballVelX;
-    ballY += ballVelY;
-
-    // Rebote con paredes laterales
-    if (ballX <= 0 || ballX >= 127) ballVelX *= -1;
-
-    // Rebote con paleta jugador (inferior)
-    if (ballY + 2 >= 63 && ballX >= paddleX && ballX <= paddleX + paddleWidth) {
-      ballVelY *= -1;
-      // 🔊 Sonido de rebote jugador
-      tone(9, 1000, 80); 
-    }
-
-    // Rebote con paleta CPU (superior)
-    if (ballY - 2 <= 0 && ballX >= paddleCPU_X && ballX <= paddleCPU_X + paddleWidth) {
-      ballVelY *= -1;
-      // 🔊 Sonido de rebote CPU
-      tone(9, 800, 80);
-    }
-
-    // Si la pelota se sale por abajo (pierdes)
-    if (ballY >= 63) {
-      // 🔊 Sonido de derrota
-      tone(9, 500, 150);
-      delay(200);
-      tone(9, 300, 300);
-      delay(300);
-      noTone(9);
-
-      esperandoPelota = true;
-      tiempoEsperaPelota = millis();
-    }
-
-    // Si la pelota se sale por arriba (ganas)
-    if (ballY <= 0) {
-      // 🔊 Sonido de victoria
-      tone(9, 900, 150);
-      delay(150);
-      tone(9, 1200, 200);
-      delay(200);
-      tone(9, 1500, 250);
-      delay(250);
-      noTone(9);
-
-      // 🎉 Sumar monedas solo al ganar
-      monedas += 5;      
-      guardarMonedas();
-
-      esperandoPelota = true;
-      tiempoEsperaPelota = millis();
-    }
-  }
-
-  // Dibujar paletas y pelota
-  display.fillRect(paddleX, 60, paddleWidth, paddleHeight, WHITE);      // paleta jugador
-  display.fillRect(paddleCPU_X, 0, paddleWidth, paddleHeight, WHITE);   // paleta CPU
-  display.fillCircle(ballX, ballY, 2, WHITE);                           // pelota
-
-  // Mostrar monedas (arriba a la derecha)
-  display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
-  display.setCursor(98, 4);
-  display.setTextSize(1);
-  display.print(monedas);
-
-  // Si presiona el botón central (BTN1): regresar al MENÚ DE JUEGOS
-  if (btn1) {
-    enJuego = false;
-    menuJuegosActivo = true;
-    opcionJuego = 0; // que quede seleccionado Ponk en el menú
-    delay(300);
-  }
-
-  display.display();
-  return;
-}
-// === Juego Block Breaker ===
-if (juegoActual == 1) {
-  // Variables estáticas para que conserven su estado
-  static int paddleX_BB = 48;
-  static int ballX_BB = 64, ballY_BB = 32;
-  static int ballVelX_BB = 1, ballVelY_BB = -1;
-  static bool bloques[4][8]; // 4 filas x 8 columnas
-  static bool nivelIniciado = false;
-  static int vidas = 3;
-
-  // Iniciar nivel (solo una vez o reinicio)
-  if (!nivelIniciado) {
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 8; j++) {
-        bloques[i][j] = true; // activar todos los bloques
-      }
-    }
-    paddleX_BB = 48;
-    ballX_BB = 64;
-    ballY_BB = 40;
-    ballVelX_BB = 1;
-    ballVelY_BB = -1;
-    nivelIniciado = true;
-  }
-
-  // Movimiento jugador
-  if (btn0 && paddleX_BB > 0) paddleX_BB -= 2;
-  if (btn2 && paddleX_BB + paddleWidth < 128) paddleX_BB += 2;
-
-  // Mover pelota
-  ballX_BB += ballVelX_BB;
-  ballY_BB += ballVelY_BB;
-
-  // Rebotes laterales y techo
-  if (ballX_BB <= 0 || ballX_BB >= 127) ballVelX_BB *= -1;
-  if (ballY_BB <= 0) ballVelY_BB *= -1;
-
-  // Rebote en paleta
-  if (ballY_BB + 2 >= 63 && ballX_BB >= paddleX_BB && ballX_BB <= paddleX_BB + paddleWidth) {
-    ballVelY_BB *= -1;
-
-    // 🔊 Sonido de rebote en paleta
-    tone(9, 1200, 80);
-  }
-
-  // Pelota toca el piso (pierde vida)
-  if (ballY_BB >= 64) {
-    vidas--;
-
-    if (vidas <= 0) {
-      // 🔊 Sonido de derrota final (pierde todas las vidas)
-      tone(9, 500, 150);
-      delay(200);
-      tone(9, 300, 300);
-      delay(300);
-      noTone(9);
-
-      // Reiniciar nivel completo y vidas
-      vidas = 3;
-      nivelIniciado = false;
-    } else {
-      // 🔊 Sonido de pérdida de vida
-      tone(9, 600, 150);
-      delay(200);
-      noTone(9);
-
-      // Solo reinicia la pelota
-      ballX_BB = 64;
-      ballY_BB = 40;
-      ballVelX_BB = 1;
-      ballVelY_BB = -1;
-    }
-    delay(500);
-  }
-
-  // Colisión con bloques
-  int bloqueW = 16, bloqueH = 6;
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 8; j++) {
-      if (bloques[i][j]) {
-        int bx = j * bloqueW;
-        int by = i * bloqueH + 10;
-        if (ballX_BB >= bx && ballX_BB <= bx + bloqueW &&
-            ballY_BB >= by && ballY_BB <= by + bloqueH) {
-          bloques[i][j] = false;
-          ballVelY_BB *= -1;
-
-          // 🔊 Sonido al romper bloque
-          tone(9, 1000, 70);
-          delay(60);
-          noTone(9);
+  // =================== MENÚ COCINA ===================
+  if (menuCocinaActivo) {
+    if (parpadeoActivo) {
+      if (millis() - inicioParpadeo >= 3000) {
+        parpadeoActivo = false;
+        if (opcionCocina == 7) {
+          menuCocinaActivo = false;
+        } else if (monedas >= costoComida[opcionCocina]) {
+          monedas -= costoComida[opcionCocina];
+          hambre = max(0, hambre - valorEfecto[opcionCocina]);
+          if (afectaEnergia[opcionCocina])
+            energia = min(100, energia + valorEfecto[opcionCocina]);
+          guardarMonedas();
+          sonidoComer();
         }
+      } else if ((millis() / 300) % 2 == 0) {
+        display.drawBitmap((128 - 40) / 2, 6,
+                           (opcionCocina == 7 ? iconosJuegos[3] : iconosComida[opcionCocina]),
+                           40, 40, WHITE);
       }
-    }
-  }
+    } else {
+      if (btn0) { opcionCocina = (opcionCocina - 1 + totalOpcionesCocina) % totalOpcionesCocina; delay(200); }
+      if (btn2) { opcionCocina = (opcionCocina + 1) % totalOpcionesCocina; delay(200); }
+      if (btn1) { inicioParpadeo = millis(); parpadeoActivo = true; }
 
-  // Dibujar bloques
-  bool bloquesRestantes = false;
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 8; j++) {
-      if (bloques[i][j]) {
-        display.fillRect(j * bloqueW, i * bloqueH + 10, bloqueW - 1, bloqueH - 1, WHITE);
-        bloquesRestantes = true;
+      display.setTextColor(WHITE); 
+      display.drawBitmap((128 - 40) / 2, 6,
+                         (opcionCocina == 7 ? iconosJuegos[3] : iconosComida[opcionCocina]),
+                         40, 40, WHITE);
+
+      display.setCursor(40, 50);
+      display.print(opcionCocina == 7 ? "Regresar" : nombresComida[opcionCocina]);
+
+      // Mostrar porcentaje abajo
+      if (opcionCocina != 7) {
+        display.setCursor(40, 58);
+        display.print("+");
+        display.print(valorEfecto[opcionCocina]);
+        display.print("%");
       }
-    }
-  }
 
-  // Si no quedan bloques: ganar monedas y vida extra
-  if (!bloquesRestantes) {
-    // 🔊 Sonido de victoria
-    tone(9, 900, 150);
-    delay(150);
-    tone(9, 1200, 200);
-    delay(200);
-    tone(9, 1500, 250);
-    delay(250);
-    noTone(9);
-
-    monedas += 10;
-    guardarMonedas();
-    if (vidas < 5) vidas++;
-    nivelIniciado = false;
-    delay(500);
-  }
-
-  // Dibujar paleta y pelota
-  display.fillRect(paddleX_BB, 60, paddleWidth, paddleHeight, WHITE);
-  display.fillCircle(ballX_BB, ballY_BB, 2, WHITE);
-
-  // Mostrar monedas
-  display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
-  display.setCursor(98, 4);
-  display.setTextSize(1);
-  display.print(monedas);
-
-  // Mostrar vidas en esquina superior izquierda
-  display.drawBitmap(2, 2, iconoCorazon, 10, 10, WHITE);
-  display.setCursor(14, 4);
-  display.setTextSize(1);
-  display.print(vidas);
-
-  // Salir al menú de juegos con BTN1
-  if (btn1) {
-    enJuego = false;
-    menuJuegosActivo = true;
-    opcionJuego = 1; // dejar seleccionado Block Breaker
-    delay(300);
-  }
-
-  display.display();
-  return;
-}
-
-
-
-// === Juego Flappy Dapy ===
-if (juegoActual == 2) {
-  // Variables estáticas
-  static int birdX = 30, birdY = 30;
-  static int birdVel = 0;
-  static int obstX = 128, gapY = 20;
-  static int vidasFD = 3;
-  static int obstaculosPasados = 0;
-  const int gapAltura = 35;   // Espacio entre obstáculos
-
-  // Iniciar variables si es la primera vez
-  static bool iniciado = false;
-  if (!iniciado) {
-    birdX = 30;
-    birdY = 30;
-    birdVel = 0;
-    obstX = 128;
-    gapY = random(5, 20);     // Ajuste de rango para que quepa el hueco
-    vidasFD = 3;
-    obstaculosPasados = 0;
-    iniciado = true;
-  }
-
-  // Movimiento del pájaro
-  if (btn1) birdVel = -3; // Salto
-  birdVel += 1;           // Gravedad
-  birdY += birdVel;
-  if (birdY < 0) birdY = 0;
-  if (birdY > 63 - 15) birdY = 63 - 15; // límites de pantalla
-
-  // Movimiento del obstáculo
-  obstX -= 2;
-  if (obstX < -15) {
-    obstX = 128;
-    gapY = random(5, 20); // Ajuste de rango para el nuevo gap
-    obstaculosPasados++;
-    monedas++;
-    guardarMonedas();
-
-    // Vida extra cada 20 obstáculos
-    if (obstaculosPasados % 20 == 0 && vidasFD < 5) {
-      vidasFD++;
-    }
-  }
-
-  // Colisiones (paredes)
-  if (birdY <= gapY || birdY + 15 >= gapY + gapAltura) {
-    if (birdX + 15 > obstX && birdX < obstX + 15) {
-      // choque con el obstáculo
-      vidasFD--;
-      if (vidasFD <= 0) {
-        iniciado = false; // reiniciar juego completo
-      } else {
-        birdY = 30;
-        birdVel = 0;
+      // Mostrar precio en esquina vacía
+      if (opcionCocina != 7) {
+        display.setCursor(2, 58);
+        display.print("$");
+        display.print(costoComida[opcionCocina]);
       }
+
+      display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
+      display.setCursor(98, 4);
+      display.print(monedas);
+
+      dibujarPersonajeEsquina();
     }
+    display.display();
+    return;
   }
 
-  // ======= Dibujar obstáculos con puntas orientadas correctamente =======
-  int obstAncho = 15;
-  int puntaAltura = 6; // altura del triángulo punta
+  // =================== MENÚ HABITACIÓN ===================
+  if (menuHabitacionActivo) {
+    if (parpadeoActivo) {
+      if (millis() - inicioParpadeo >= 3000) {
+        parpadeoActivo = false;
+        if (opcionHabitacion == 3) {
+          menuHabitacionActivo = false;
+        } else if (opcionHabitacion == 0) {
+          durmiendo = true;
+          tiempoDormir = millis();
+          cancionDormir();
+        } else if (opcionHabitacion == 1) {
+          // Créditos
+          display.clearDisplay();
+          display.setCursor(10, 20);
+          display.print("By: Team Dinosaurios");
+          display.display();
+          delay(1500);
+        } else if (opcionHabitacion == 2) {
+          resetGame();
+        }
+      } else if ((millis() / 300) % 2 == 0) {
+        display.drawBitmap((128 - 40) / 2, 8, iconosHabitacion[opcionHabitacion], 40, 40, WHITE);
+      }
+    } else {
+      if (btn0) { opcionHabitacion = (opcionHabitacion - 1 + totalOpcionesHabitacion) % totalOpcionesHabitacion; delay(200); }
+      if (btn2) { opcionHabitacion = (opcionHabitacion + 1) % totalOpcionesHabitacion; delay(200); }
+      if (btn1) { inicioParpadeo = millis(); parpadeoActivo = true; }
 
-  // Obstáculo superior
-  // Punta hacia arriba (fuera de la pantalla)
-  for (int i = 0; i < obstAncho / 2; i++) {
-    display.drawFastHLine(
-      obstX + (obstAncho / 2) - i,
-      gapY - i - 1,
-      i * 2,
-      WHITE
-    );
+      display.setTextColor(WHITE); 
+      display.drawBitmap((128 - 40) / 2, 8, iconosHabitacion[opcionHabitacion], 40, 40, WHITE);
+      display.setCursor((128 - strlen(nombresHabitacion[opcionHabitacion]) * 6) / 2, 54);
+      display.print(nombresHabitacion[opcionHabitacion]);
+
+      display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
+      display.setCursor(98, 4);
+      display.print(monedas);
+
+      dibujarPersonajeEsquina();
+    }
+    display.display();
+    return;
   }
 
-  // Cuerpo rectángulo superior (debajo de la punta)
-  display.fillRect(obstX, 0, obstAncho, gapY - puntaAltura, WHITE);
+  // =================== MENÚ JUEGOS ===================
+  if (menuJuegosActivo) {
+    if (parpadeoActivo) {
+      if (millis() - inicioParpadeo >= 3000) {
+        parpadeoActivo = false;
+        if (opcionJuego == 3) { menuJuegosActivo = false; enJuego = false; }
+        else { enJuego = true; menuJuegosActivo = false; juegoActual = opcionJuego; }
+      } else if ((millis() / 300) % 2 == 0) {
+        display.drawBitmap((128 - 40) / 2, 8, iconosJuegos[opcionJuego], 40, 40, WHITE);
+      }
+    } else {
+      if (btn0) { opcionJuego = (opcionJuego - 1 + totalJuegos) % totalJuegos; delay(200); }
+      if (btn2) { opcionJuego = (opcionJuego + 1) % totalJuegos; delay(200); }
+      if (btn1) { inicioParpadeo = millis(); parpadeoActivo = true; }
 
-  // Obstáculo inferior
-  int obstYinf = gapY + gapAltura;
+      display.setTextColor(WHITE); 
+      display.drawBitmap((128 - 40) / 2, 8, iconosJuegos[opcionJuego], 40, 40, WHITE);
+      display.setCursor((128 - strlen(nombresJuegos[opcionJuego]) * 6) / 2, 54);
+      display.print(nombresJuegos[opcionJuego]);
 
-  // Cuerpo rectángulo inferior (encima de la punta)
-  display.fillRect(
-    obstX,
-    obstYinf + puntaAltura,
-    obstAncho,
-    64 - (obstYinf + puntaAltura),
-    WHITE
-  );
+      display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
+      display.setCursor(98, 4);
+      display.print(monedas);
 
-  // Punta hacia abajo (fuera de la pantalla)
-  for (int i = 0; i < obstAncho / 2; i++) {
-    display.drawFastHLine(
-      obstX + (obstAncho / 2) - i,
-      obstYinf + i,
-      i * 2,
-      WHITE
-    );
+      dibujarPersonajeEsquina();
+    }
+    display.display();
+    return;
   }
 
-  // Dibujar pájaro
-  display.drawBitmap(birdX, birdY, iconoPajaro, 15, 15, WHITE);
-
-  // Mostrar monedas
-  display.drawBitmap(112, 2, iconoMoneda, 10, 10, WHITE);
-  display.setCursor(98, 4);
-  display.setTextSize(1);
-  display.print(monedas);
-
-  // Mostrar vidas
-  display.drawBitmap(2, 2, iconoCorazon, 10, 10, WHITE);
-  display.setCursor(14, 4);
-  display.print(vidasFD);
-
-  // Salir al menú juegos (ambos botones extremos)
-  if (btn0 && btn2) {
-    enJuego = false;
-    menuJuegosActivo = true;
-    opcionJuego = 2;
-    delay(300);
-  }
-
-  display.display();
-  return;}}
-
-
-
-
-  // =================== MENÚ E INTERFAZ ===================
-  // Barra superior: porcentaje y monedas
+  // =================== INTERFAZ PRINCIPAL ===================
   display.fillRect(0, 0, 128, 10, WHITE);
   display.setTextSize(1);
   display.setTextColor(BLACK, WHITE);
@@ -1165,68 +932,40 @@ if (juegoActual == 2) {
   display.setCursor(98, 2);
   display.print(monedas);
 
-  // Mostrar personaje (romper huevo o BB/adulto según progreso)
   if (progreso < maxProgreso) {
-    // Barra inferior: frases
     display.fillRect(0, 50, 128, 14, WHITE);
-    display.setTextSize(1);
     display.setTextColor(BLACK, WHITE);
     display.setCursor(2, 54);
     display.print(frases[progreso]);
 
-    // Huevo en el centro
     if (millis() - ultimoCambio > 300) {
       frameActual = (frameActual + 1) % 4;
       ultimoCambio = millis();
     }
     display.drawBitmap((128 - 32) / 2, 16, framesHuevo[frameActual], 32, 32, WHITE);
 
-bool btn1 = digitalRead(BTN1) == LOW;
-
-if (btn1) {
-   sonidoHuevo();
-}
-
-
-    // Si presiona botón 1 suma progreso
-    if (btn1) {
-      progreso++;
-      delay(300);
-    }
+    if (btn1) { sonidoHuevo(); progreso++; delay(300); }
   } else {
-    // Barra inferior: iconos de salas
     display.fillRect(0, 50, 128, 14, WHITE);
-    display.setTextSize(1);
     display.setTextColor(BLACK, WHITE);
-
-    display.drawBitmap(2, 48, iconosSalas[salaActual], 16, 16, BLACK);
     display.setCursor(22, 54);
     display.print(nombresSalas[salaActual]);
+    display.drawBitmap(2, 48, iconosSalas[salaActual], 16, 16, BLACK);
 
-    // Cambiar sala
-    if (btn0) {
-      salaActual = (salaActual - 1 + totalSalas) % totalSalas;
-      delay(200);
-    }
-    if (btn2) {
-      salaActual = (salaActual + 1) % totalSalas;
-      delay(200);
-    }
-
-    // Si es juegos y presiona botón 1
-    if (salaActual == 1 && btn1) {
-      menuJuegosActivo = true;
-      opcionJuego = 0;
-      delay(300);
-    }
-
-    // Animación personaje BB/adulto
     if (millis() - ultimoCambio > 300) {
       frameActual = (frameActual + 1) % 4;
       ultimoCambio = millis();
     }
     display.drawBitmap((128 - 32) / 2, 16, framesBB[frameActual], 32, 32, WHITE);
-  }
 
+    if (btn0) { salaActual = (salaActual - 1 + totalSalas) % totalSalas; sonidoMover(); delay(200); }
+    if (btn2) { salaActual = (salaActual + 1) % totalSalas; sonidoMover(); delay(200); }
+    if (btn1) {
+      if (salaActual == 0) { menuCocinaActivo = true; opcionCocina = 0; }
+      else if (salaActual == 1) { menuJuegosActivo = true; opcionJuego = 0; }
+      else if (salaActual == 2) { menuHabitacionActivo = true; opcionHabitacion = 0; }
+      delay(300);
+    }
+  }
   display.display();
-}  
+}
